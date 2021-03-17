@@ -1,0 +1,14 @@
+Je O O
+vais O O
+à O O
+Rio B-LOC B-LOC
+de I-LOC O
+Janeiro I-LOC O
+en O O
+partant O O
+de O O
+Paris B-LOC O
+. O O
+Merci O O
+Air B-ORG B-ORG
+France I-ORG I-ORG
