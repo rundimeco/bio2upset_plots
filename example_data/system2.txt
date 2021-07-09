@@ -2,12 +2,12 @@ Je O O
 vais O O
 à O O
 Rio B-LOC B-LOC
-de I-LOC O
-Janeiro I-LOC O
+de O I-LOC
+Janeiro O I-LOC
 en O O
 partant O O
 de O O
-Paris B-LOC O
+Paris O B-LOC
 . O O
 Merci O O
 Air B-ORG B-ORG

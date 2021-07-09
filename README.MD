@@ -10,3 +10,8 @@ For an external usage
 
   
 The names displayed on the graphs will be derived from the filenames
+
+TODO:
+- better handling of BIO format
+- offer the possibility to select the appropriate columns
+- display messages  regarding the quality of the data

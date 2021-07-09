@@ -28,7 +28,7 @@ def bio2upsetData(data, names):
   for i in range(len(data[0])):
 
     truth = "P" #by default
-    if data[0][i][1]=="O":
+    if data[0][i][2]=="O":
       truth = "N" #else it is a negative
 
     pred = {"T":[], "F":[]}#to store True and False predictions

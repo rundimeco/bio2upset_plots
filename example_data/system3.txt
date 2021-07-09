@@ -1,4 +1,4 @@
-Je O B-PERS
+Je B-PERS O
 vais O O
 à O O
 Rio B-LOC B-LOC
@@ -9,6 +9,6 @@ partant O O
 de O O
 Paris B-LOC B-LOC
 . O O
-Merci O B-PERS
+Merci B-PERS O
 Air B-ORG B-ORG
 France I-ORG I-ORG
