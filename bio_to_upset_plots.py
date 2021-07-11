@@ -19,7 +19,7 @@ def get_combination(names):
       liste_possible.append(tuple(sorted(list(subset))))
   return liste_possible
 
-def display_res(all_res)
+def display_res(all_res):
   for res, dic in all_res.items():
     print(res)
     for tup, nb in dic.items():
@@ -46,7 +46,7 @@ def evaluate_predictions(data, names, i, debug):
       print("-->",names[j], f"{type_res} : %s"%data[j][i])
   return pred
 
-def get_all_res_tokens(data, names)
+def get_all_res_tokens(data, names, debug):
   liste_possible = get_combination(names)
   print(  "%i possible combinations"%len(liste_possible))
   all_res= {}
@@ -62,7 +62,7 @@ def get_all_res_tokens(data, names)
 
 def bio2upsetData(data, names, debug = False):
   """Transforms BIO data in upset_plot format"""
-  all_res_tokens = get_all_res_tokens(data, names)
+  all_res_tokens = get_all_res_tokens(data, names, debug)
   if debug==True:
     display_res(all_res_tokens)
   return all_res_tokens
