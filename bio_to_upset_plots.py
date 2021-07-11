@@ -7,7 +7,7 @@ def file2_triple(path):
   """ Prepares BIO data"""
   with open(path) as f:
     l = f.readlines()
-  res= [re.split(" ", re.sub("\n", "", x)) for x in l if len(x)>2]
+  res= [re.split(" ", re.sub("\n", "", x)) for x in l if len(x)>2 and x[0]!="#"]
   return [x for x in res if len(x)==3]
 import itertools
 
@@ -19,31 +19,48 @@ def get_combination(names):
       liste_possible.append(tuple(sorted(list(subset))))
   return liste_possible
 
+def display_res(all_res)
+  for res, dic in all_res.items():
+    print(res)
+    for tup, nb in dic.items():
+      if nb>0:
+        print("  ",tup, nb)
+
+def evaluate_predictions(data, names, i, debug):
+  """ evaluates the predictions for th i{th} line"""
+  truth = "P" #by default
+  if data[0][i][2]=="O":
+    truth = "N" #else it is a positive
+  pred = {}#store results
+  for j in range(len(names)):
+    if data[j][i][1]==data[j][i][2]:
+      this_pred = "T"
+      this_truth = truth
+    else:
+      this_pred = "F"
+      this_truth = "P" if truth =="N" else "N"#switch values
+    type_res = f"{this_pred}{this_truth}"
+    pred.setdefault(type_res, [])
+    pred[type_res].append(names[j])
+    if debug == True and type_res=="TP":
+      print("-->",names[j], f"{type_res} : %s"%data[j][i])
+  return pred
+
 def bio2upsetData(data, names, debug = False):
   """Transforms BIO data in upset_plot format"""
   liste_possible = get_combination(names)
   print(  "%i possible combinations"%len(liste_possible))
   all_res = {}
-  stats = {"lines":len(data[0])}
   for i in range(len(data[0])):
-
-    truth = "P" #by default
-    if data[0][i][2]=="O":
-      truth = "N" #else it is a positive
-    pred = {"T":[], "F":[]}#to store True and False predictions
-    for j in range(len(names)):
-      if data[j][i][1]==data[j][i][2]:
-        pred["T"].append(names[j])
-      else:
-        pred["F"].append(names[j])
-
-    for p, liste in pred.items():
-      type_res = f"{p}{truth}"
+    pred = evaluate_predictions(data, names, i, debug)
+    for type_res, liste in pred.items():
       #only make sense to get numbers from empty lists if we are on the TP case
       if len(liste)>0 or type_res=="TP":
         cle = tuple(sorted(liste))
         all_res.setdefault(type_res, {x: 0 for x in liste_possible})
         all_res[type_res][cle]+=1
+  if debug==True:
+    display_res(all_res)
   return all_res
 
 def write_json_file(path, content):
@@ -116,5 +133,6 @@ if __name__=="__main__":
   elif len(sys.argv)==3:
     print("--- debug mode ---")
     DEBUG = True
+  TOKENS=True
   path = sys.argv[1]
   files_2_cat(path)
