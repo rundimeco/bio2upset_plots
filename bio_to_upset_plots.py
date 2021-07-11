@@ -46,11 +46,10 @@ def evaluate_predictions(data, names, i, debug):
       print("-->",names[j], f"{type_res} : %s"%data[j][i])
   return pred
 
-def bio2upsetData(data, names, debug = False):
-  """Transforms BIO data in upset_plot format"""
+def get_all_res_tokens(data, names)
   liste_possible = get_combination(names)
   print(  "%i possible combinations"%len(liste_possible))
-  all_res = {}
+  all_res= {}
   for i in range(len(data[0])):
     pred = evaluate_predictions(data, names, i, debug)
     for type_res, liste in pred.items():
@@ -59,9 +58,14 @@ def bio2upsetData(data, names, debug = False):
         cle = tuple(sorted(liste))
         all_res.setdefault(type_res, {x: 0 for x in liste_possible})
         all_res[type_res][cle]+=1
-  if debug==True:
-    display_res(all_res)
   return all_res
+
+def bio2upsetData(data, names, debug = False):
+  """Transforms BIO data in upset_plot format"""
+  all_res_tokens = get_all_res_tokens(data, names)
+  if debug==True:
+    display_res(all_res_tokens)
+  return all_res_tokens
 
 def write_json_file(path, content):
   """ writes some content in json format"""
