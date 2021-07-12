@@ -28,10 +28,12 @@ def display_res(all_res):
 
 def evaluate_predictions(data, names, i, debug):
   """ evaluates the predictions for th i{th} line"""
-  truth = "P" #by default
   if data[0][i][2]=="O":
     truth = "N" #else it is a positive
-  pred = {}#store results
+    pred = {"FP":[], "TN":[]}#store possible results
+  else:
+    truth = "P" #by default
+    pred = {"TP":[], "FN":[]}#store possible results
   for j in range(len(names)):
     if data[j][i][1]==data[j][i][2]:
       this_pred = "T"
@@ -40,10 +42,10 @@ def evaluate_predictions(data, names, i, debug):
       this_pred = "F"
       this_truth = "P" if truth =="N" else "N"#switch values
     type_res = f"{this_pred}{this_truth}"
-    pred.setdefault(type_res, [])
     pred[type_res].append(names[j])
     if debug == True and type_res=="TP":
       print("-->",names[j], f"{type_res} : %s"%data[j][i])
+  
   return pred
 
 def get_all_res_tokens(data, names, debug):
@@ -60,10 +62,10 @@ def get_all_res_tokens(data, names, debug):
         all_res[type_res][cle]+=1
   return all_res
 
-def bio2upsetData(data, names, debug = False):
+def bio2upsetData(data, names, debug = False, verbose = True):
   """Transforms BIO data in upset_plot format"""
   all_res_tokens = get_all_res_tokens(data, names, debug)
-  if debug==True:
+  if verbose==True:
     display_res(all_res_tokens)
   return all_res_tokens
 
