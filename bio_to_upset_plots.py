@@ -76,7 +76,7 @@ def write_json_file(path, content):
   w.write(json.dumps(content, indent = 2))
   w.close()
 
-def plot_graph(res, path):
+def plot_graph(res, path, img_format = "png"):
   """ From upset_plot data Plot upset plots and store corresponding data"""
 
   path_figures = f"{path}/figures"
@@ -90,7 +90,9 @@ def plot_graph(res, path):
       data_out.append(dic[cat])
     example = from_memberships(liste_cats, data = data_out)
     plot(example)
-    pyplot.savefig(f"{path_figures}/{typ_res}.png")
+    path_img = f"{path_figures}/{typ_res}.{img_format}"
+    print(path_img)
+    pyplot.savefig(path_img)
 
   print(f"  figures stored in '{path_figures}/'")
 
@@ -98,11 +100,11 @@ def plot_graph(res, path):
   write_json_file(path_upset, [liste_cats, data_out])
   print(f"  output file in upset plot format stored in '{path_upset}'")
 
-def verify_data(liste_files, data_in):
+def verify_data(list_files, data_in):
   """Verify the number of BIO lines and that the tokens are the same"""
   for i in range(1, len(data_in)):
-    f0 = liste_files[0]
-    fi = liste_files[i]
+    f0 = list_files[0]
+    fi = list_files[i]
     l0 = len(data_in[0])
     li = len(data_in[i])
     assert l0==li, f"Inconsistent number of BIO lines :\n {f0} ({l0}) VS {fi} ({li})"
@@ -111,18 +113,34 @@ def verify_data(liste_files, data_in):
       toki = data_in[i][j][0]
       assert tok0==toki, f"Not the same token line {j} : \n f{0} --> {tok0}\n f{1} --> {toki}" 
 
-def files_2_cat(path):
-  liste_files = glob.glob(f"{path}/*.tx*")
-  data_in = [file2_triple(path_file) for path_file in liste_files]
-  verify_data(liste_files, data_in)
+def get_names_plot(list_files, dic_names):
+  """
+  Gives a name for each path present in list_files
+  By default: gives filename
+  If dic_names contains a "translation" for each path or each filename, it gives the translation
+  """
+  names = [re.split("/|\.", x)[-2] for x in list_files]
+  if len(dic_names)==len(list_files):
+    missing_paths     = set(dic_names.keys()).difference(set(list_files))
+    missing_filenames = set(dic_names.keys()).difference(set(names))
+    if len(missing_paths)==0:# Translating path
+      return [dic_names[x] for x in list_files]
+    elif len(missing_filenames)==0:# Tranlasting filenames
+      return [dic_names[x] for x in names]
+  # If we are there, translation was not possible
+  return names
 
-  names = [re.split("/|\.", x)[-2] for x in liste_files]
+def files_2_cat(path, img_format = "png", dic_names= {}):
+  list_files = glob.glob(f"{path}/*.tx*")
+  names = get_names_plot(list_files, dic_names)
   print(f"\nfilenames : {names}")
+
+  data_in = [file2_triple(path_file) for path_file in list_files]
+  verify_data(list_files, data_in)
   res = bio2upsetData(data_in, names, debug=DEBUG)
-  plot_graph(res, path)
+  plot_graph(res, path, img_format = img_format)
 
-
-#for an external usage just call the files_2_cat function with a path containg BIO files
+# for an external usage just call the files_2_cat function with a path containing BIO files
 
 
 if __name__=="__main__":
@@ -134,7 +152,7 @@ if __name__=="__main__":
   if len(sys.argv)==1:
     print("\nspecify the path of the directory containg the BIO result files")
     print("\nfor example python bio_to_upset_plots.py example_data")
-    print("...exiting ...")
+    print("... exiting ...")
     exit()
   elif len(sys.argv)==3:
     print("--- debug mode ---")
@@ -142,3 +160,15 @@ if __name__=="__main__":
   TOKENS=True
   path = sys.argv[1]
   files_2_cat(path)
+
+  # One can change the image format :
+  files_2_cat(path, img_format="svg")
+
+  # One can also give alternative names for each name in path
+
+  # Creating dummy values for the example
+  dummy_names= ["toto", "titi", "tutu"]
+  liste_path = glob.glob(f"{path}/*.tx*")
+  dic_path = {liste_path[i]:dummy_names[i] for i in range(len(dummy_names))}
+
+  files_2_cat(path, dic_names = dic_path)

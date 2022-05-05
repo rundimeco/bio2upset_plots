@@ -2,30 +2,30 @@
   [
     [],
     [
-      "system1"
+      "titi"
     ],
     [
-      "system1",
-      "system2"
+      "titi",
+      "toto"
     ],
     [
-      "system1",
-      "system2",
-      "system3"
+      "titi",
+      "toto",
+      "tutu"
     ],
     [
-      "system1",
-      "system3"
+      "titi",
+      "tutu"
     ],
     [
-      "system2"
+      "toto"
     ],
     [
-      "system2",
-      "system3"
+      "toto",
+      "tutu"
     ],
     [
-      "system3"
+      "tutu"
     ]
   ],
   [
@@ -34,8 +34,8 @@
     0,
     0,
     0,
-    3,
     0,
-    0
+    0,
+    3
   ]
 ]
