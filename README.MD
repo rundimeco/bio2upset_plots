@@ -1,3 +1,14 @@
+### Creating upset plots from BIO (CONLL) files
+
+Upset plots are a clever way to present intersection and differences between sets. It is pretty useful for comparing different systems that produce results in BIO format (NER for instance). Contrary to Venn Diagrams, upset plots allows to represent clearly more than three sets intersections and differences.
+
+The upset plots themselves are produced using the [upsetplot python Library](https://upsetplot.readthedocs.io/en/stable/)
+
+### Acknowledgements
+ Special thanks to *Jean-Baptiste Tanguy* (Sorbonne Université) for bringing this visualization to my attention. Thanks also to *Steve Mutuvi* (Multimedia University of Kenya, La Rochelle University), Caroline Koudoro-Parfait and Richy Nutt (Sorbonne Université) for testing the different versions and bringing useful ideas and comments.
+
+
+### Usage
 
 For a command line usage : python bio_to_upset_plots.py DIR
 
