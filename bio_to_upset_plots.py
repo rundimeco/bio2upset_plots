@@ -62,7 +62,7 @@ def get_all_res_tokens(data, names, debug):
         all_res[type_res][cle]+=1
   return all_res
 
-def bio2upsetData(data, names, debug = False, verbose = True):
+def bio2upsetData(data, names, debug = False, verbose = False):
   """Transforms BIO data in upset_plot format"""
   all_res_tokens = get_all_res_tokens(data, names, debug)
   if verbose==True:
@@ -91,14 +91,15 @@ def plot_graph(res, path, img_format = "png"):
     example = from_memberships(liste_cats, data = data_out)
     plot(example)
     path_img = f"{path_figures}/{typ_res}.{img_format}"
-    print(path_img)
+    if VERBOSE==True:
+      print(path_img)
     pyplot.savefig(path_img)
 
-  print(f"  figures stored in '{path_figures}/'")
+  print(f"--> figures stored in '{path_figures}/'")
 
   path_upset = f"{path}/data_upset.json"
   write_json_file(path_upset, [liste_cats, data_out])
-  print(f"  output file in upset plot format stored in '{path_upset}'")
+  print(f"--> output file in upset plot format stored in '{path_upset}'")
 
 def verify_data(list_files, data_in):
   """Verify the number of BIO lines and that the tokens are the same"""
@@ -120,14 +121,20 @@ def get_names_plot(list_files, dic_names):
   If dic_names contains a "translation" for each path or each filename, it gives the translation
   """
   names = [re.split("/|\.", x)[-2] for x in list_files]
-  if len(dic_names)==len(list_files):
-    missing_paths     = set(dic_names.keys()).difference(set(list_files))
-    missing_filenames = set(dic_names.keys()).difference(set(names))
+  if len(dic_names)>0:
+    missing_paths     = set(list_files).difference(set(dic_names.keys()))
+    missing_filenames = set(names).difference(set(dic_names.keys()))
     if len(missing_paths)==0:# Translating path
       return [dic_names[x] for x in list_files]
     elif len(missing_filenames)==0:# Tranlasting filenames
       return [dic_names[x] for x in names]
   # If we are there, translation was not possible
+    print("-"*20)
+    print("'dic_names' is incomplete")
+    print(f"It provided translations for {list(dic_names.keys())} but :")
+    print(f"  - I'm missing filepath translation for {missing_paths}")
+    print(f"  - I'm missing filename translation for {missing_filenames}")
+    print("-"*20)
   return names
 
 def files_2_cat(path, img_format = "png", dic_names= {}):
@@ -137,7 +144,7 @@ def files_2_cat(path, img_format = "png", dic_names= {}):
 
   data_in = [file2_triple(path_file) for path_file in list_files]
   verify_data(list_files, data_in)
-  res = bio2upsetData(data_in, names, debug=DEBUG)
+  res = bio2upsetData(data_in, names, debug=DEBUG, verbose = VERBOSE)
   plot_graph(res, path, img_format = img_format)
 
 # for an external usage just call the files_2_cat function with a path containing BIO files
@@ -149,6 +156,7 @@ if __name__=="__main__":
   print("DIR is the directory where the aligned result files (BIO format) are stored")
   print("The names displayed on the graphs will be derived from the filenames")
   DEBUG = False
+  VERBOSE = True
   if len(sys.argv)==1:
     print("\nspecify the path of the directory containg the BIO result files")
     print("\nfor example python bio_to_upset_plots.py example_data")
@@ -159,16 +167,43 @@ if __name__=="__main__":
     DEBUG = True
   TOKENS=True
   path = sys.argv[1]
+
+  ### Simple usage
+  print("Simple usage : ")
+  print("files_2_cat(path)")
   files_2_cat(path)
 
-  # One can change the image format :
+  VERBOSE = False
+  ### Changing image format
+  print("\n") 
+  print("*"*20)
+  dd= input("One can change the image format with img_format :")
+  print("*"*20)
+  print("files_2_cat(path, img_format=\"svg\")")
   files_2_cat(path, img_format="svg")
 
-  # One can also give alternative names for each name in path
-
+  ### Giving alternative names on the graphs (default: filenames)
+  print("\n") 
+  print("*"*20)
+  dd = input("One can also give alternative names for each name in path")
+  print("*"*20)
+  
   # Creating dummy values for the example
   dummy_names= ["toto", "titi", "tutu"]
   liste_path = glob.glob(f"{path}/*.tx*")
   dic_path = {liste_path[i]:dummy_names[i] for i in range(len(dummy_names))}
+  print(f"dic_path={dic_path}")
+  print("files_2_cat(path, dic_names = dic_path)")
+  files_2_cat(path, dic_names = dic_path)
+
+  print("\n") 
+  print("*"*20)
+  print("What happens if dic_path is incomplete?")
+  print("*"*20)
+
+  print(f"liste path = {liste_path}")
+  print(f"dic_path.keys() = {dic_path.keys()}")
+
+  dic_path = {liste_path[i]:dummy_names[i] for i in range(2)}
 
   files_2_cat(path, dic_names = dic_path)
