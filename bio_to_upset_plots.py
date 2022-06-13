@@ -2,10 +2,11 @@ from upsetplot import from_memberships
 from upsetplot import plot
 from matplotlib import pyplot
 import re
+import glob
 
 def file2_triple(path):
   """ Prepares BIO data"""
-  with open(path) as f:
+  with open(path, encoding="utf-8") as f:
     l = f.readlines()
   res= [re.split(" ", re.sub("\n", "", x)) for x in l if len(x)>2 and x[0]!="#"]
   return [x for x in res if len(x)==3]
@@ -17,7 +18,7 @@ def get_combination(names):
   for L in range(0, len(names)+1):
     for subset in itertools.combinations(names, L):
       liste_possible.append(tuple(sorted(list(subset))))
-  return liste_possible
+  return sorted(liste_possible)
 
 def display_res(all_res):
   for res, dic in all_res.items():
@@ -72,7 +73,7 @@ def bio2upsetData(data, names, debug = False, verbose = False):
 def write_json_file(path, content):
   """ writes some content in json format"""
   import json
-  w = open(path, "w")
+  w = open(path, "w", encoding="utf-8")
   w.write(json.dumps(content, indent = 2))
   w.close()
 
@@ -139,9 +140,9 @@ def get_names_plot(list_files, dic_names):
 
 def files_2_cat(path, img_format = "png", dic_names= {}):
   list_files = glob.glob(f"{path}/*.tx*")
-  names = get_names_plot(list_files, dic_names)
+  names = sorted(get_names_plot(list_files, dic_names))
   print(f"\nfilenames : {names}")
-
+  
   data_in = [file2_triple(path_file) for path_file in list_files]
   verify_data(list_files, data_in)
   res = bio2upsetData(data_in, names, debug=DEBUG, verbose = VERBOSE)
@@ -149,7 +150,8 @@ def files_2_cat(path, img_format = "png", dic_names= {}):
 
 # for an external usage just call the files_2_cat function with a path containing BIO files
 
-
+#TODO: vérifier DEBUG
+#TODO: order pour les figures
 if __name__=="__main__":
   import glob, sys
   print("Usage : python bio_to_upset_plots.py DIR")
